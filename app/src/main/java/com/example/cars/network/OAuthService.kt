@@ -6,6 +6,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface OAuthService {
-    @GET("getOAuthCredentials") // Replace with the actual path to your Cloud Function
+    @GET("https://us-central1-cars-92596.cloudfunctions.net/function-1/getOAuthCredentials") // Replace with the actual path to your Cloud Function
     suspend fun getOAuthCredentials(): Response<String>
 }

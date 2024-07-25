@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    // Secret Manager
+    implementation("com.google.cloud:google-cloud-secretmanager:1.6.1")
     // Google Sign-In
     implementation(libs.play.services.auth)
     // Google Calendar API
