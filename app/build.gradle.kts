@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.google.api.services.calendar)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.androidx.credentials)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.example.cars.repository.OAuthRepository
 import com.example.cars.util.NetworkModule
@@ -17,13 +18,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.cars.ui.theme.CARSTheme
 import android.content.Intent
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.GetCredentialException
 
 class MainActivity : ComponentActivity() {
-    private val rcSignIn = 100
+    private lateinit var credentialManager: CredentialManager
+
+    private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        handleSignInResult(result.data)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,15 +48,29 @@ class MainActivity : ComponentActivity() {
             val credentials = repository.getOAuthCredentials()
             // Use the credentials as needed, e.g., for signing in with Google
         }
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
 
-        val googleSignInClient = GoogleSignIn.getClient(this, gso)
+        credentialManager = CredentialManager.create(this)
 
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, rcSignIn)
+        val signInIntent = Intent(this, CredentialManager::class.java)
+        signInLauncher.launch(signInIntent)
+    }
+
+    private fun handleSignInResult(data: Intent?) {
+        try {
+            val response = data?.getParcelableExtra<GetCredentialResponse>(CredentialManager.EXTRA_CREDENTIAL_RESPONSE)
+            val credential = response?.credential
+            // Signed in successfully, show authenticated UI.
+            updateUI(credential)
+        } catch (e: GetCredentialException) {
+            // Handle the error
+            updateUI(null)
+        }
+    }
+
+    private fun updateUI(credential: Any?) {
+        if (credential != null) {
+            // Use credential information to update your UI
+        }
     }
 }
 
